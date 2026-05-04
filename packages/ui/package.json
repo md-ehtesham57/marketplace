@@ -1,0 +1,18 @@
+{
+  "name": "@marketplace/ui",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./button": "./src/button/index.tsx",
+    "./card": "./src/card/index.tsx",
+    "./badge": "./src/badge/index.tsx",
+    "./input": "./src/input/index.tsx",
+    "./navbar": "./src/navbar/index.tsx"
+  },
+  "devDependencies": {
+    "react": "^18",
+    "@types/react": "^18",
+    "typescript": "^5"
+  }
+}
