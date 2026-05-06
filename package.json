@@ -9,7 +9,11 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\""
   },
   "devDependencies": {
-    "turbo": "latest",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "turbo": "latest"
+  },
+  "dependencies": {
+    "@prisma/client": "5.16.0",
+    "prisma": "5.16.0"
   }
 }
