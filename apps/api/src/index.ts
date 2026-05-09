@@ -4,13 +4,13 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
+import productRoutes from "./routes/product.routes";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middleware
 app.use(helmet());
 app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:3000",
@@ -22,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
 
 // Health Check
 app.get("/health", (_req, res) => {
@@ -43,7 +44,6 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ error: "Internal server error" });
 });
 
-// Start Server
 app.listen(PORT, () => {
   console.log(`API server running at http://localhost:${PORT}`);
 });

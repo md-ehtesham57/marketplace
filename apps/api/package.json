@@ -6,7 +6,8 @@
     "dev": "node --watch --require ts-node/register src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "5.16.0",
