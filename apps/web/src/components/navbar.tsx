@@ -1,14 +1,28 @@
+"use client";
+
 import { Navbar } from "@marketplace/ui/navbar";
 import { Button } from "@marketplace/ui/button";
+import { useAuth } from "@/context/auth.context";
+import { useCart } from "@/context/cart.context";
+import { useRouter } from "next/navigation";
 
 const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Products", href: "/products" },
+  { label: "Home",       href: "/"           },
+  { label: "Products",   href: "/products"   },
   { label: "Categories", href: "/categories" },
-  { label: "Deals", href: "/deals" },
+  { label: "Deals",      href: "/deals"      },
 ];
 
 export function AppNavbar() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const { items } = useCart();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
+
   const logo = (
     <a href="/" className="flex items-center gap-2">
       <div className="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center">
@@ -26,12 +40,38 @@ export function AppNavbar() {
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
         </svg>
-        <span className="absolute -top-1.5 -right-1.5 bg-sky-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">0</span>
+        <span className="absolute -top-1.5 -right-1.5 bg-sky-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+          {items.length}
+        </span>
       </a>
-      <Button variant="ghost" size="sm"><a href="/login">Login</a></Button>
-      <Button variant="primary" size="sm"><a href="/register">Sign Up</a></Button>
+
+      {isAuthenticated ? (
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-slate-600 hidden md:block">
+            Hi, {user?.firstName}!
+          </span>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm">
+            <a href="/login">Login</a>
+          </Button>
+          <Button variant="primary" size="sm">
+            <a href="/register">Sign Up</a>
+          </Button>
+        </div>
+      )}
     </div>
   );
 
-  return <Navbar logo={logo} navItems={navItems} actions={actions} />;
+  return (
+    <Navbar
+      logo={logo}
+      navItems={navItems}
+      actions={actions}
+    />
+  );
 }
