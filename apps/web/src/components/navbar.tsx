@@ -20,7 +20,7 @@ export function AppNavbar() {
 
   const handleLogout = () => {
     logout();
-    router.push("/");
+    router.push("/login");
   };
 
   const logo = (

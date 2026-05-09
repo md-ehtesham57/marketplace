@@ -1,23 +1,24 @@
+import { AddToCartButton } from "@/components/add-to-cart-button";
 import { Badge } from "@marketplace/ui/badge";
 import { Button } from "@marketplace/ui/button";
 import { Card } from "@marketplace/ui/card";
 
 const categories = [
-  { name: "Electronics",   icon: "📱", count: 1240 },
-  { name: "Fashion",       icon: "👗", count: 980  },
-  { name: "Home & Living", icon: "🛋️", count: 754  },
-  { name: "Sports",        icon: "⚽", count: 632  },
-  { name: "Books",         icon: "📚", count: 421  },
-  { name: "Beauty",        icon: "💄", count: 389  },
-  { name: "Toys",          icon: "🧸", count: 310  },
-  { name: "Automotive",    icon: "🚗", count: 275  },
+  { name: "Electronics", icon: "📱", count: 1240 },
+  { name: "Fashion", icon: "👗", count: 980 },
+  { name: "Home & Living", icon: "🛋️", count: 754 },
+  { name: "Sports", icon: "⚽", count: 632 },
+  { name: "Books", icon: "📚", count: 421 },
+  { name: "Beauty", icon: "💄", count: 389 },
+  { name: "Toys", icon: "🧸", count: 310 },
+  { name: "Automotive", icon: "🚗", count: 275 },
 ];
 
 const badgeVariant: Record<string, "success" | "warning" | "error" | "info" | "default"> = {
   "Best Seller": "success",
-  "Sale":        "error",
-  "Top Rated":   "info",
-  "New":         "warning",
+  "Sale": "error",
+  "Top Rated": "info",
+  "New": "warning",
 };
 
 function StarRating({ rating }: { rating: number }) {
@@ -76,8 +77,8 @@ export default async function HomePage() {
             </div>
             <div className="mt-12 flex items-center gap-8">
               {[
-                { label: "Products",     value: "50K+"  },
-                { label: "Sellers",      value: "2K+"   },
+                { label: "Products", value: "50K+" },
+                { label: "Sellers", value: "2K+" },
                 { label: "Happy Buyers", value: "100K+" },
               ].map((stat) => (
                 <div key={stat.label}>
@@ -164,9 +165,7 @@ export default async function HomePage() {
                         {Math.round((1 - product.price / product.originalPrice) * 100)}% off
                       </span>
                     </div>
-                    <button className="mt-3 w-full bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium py-2 rounded-lg transition-colors duration-150">
-                      Add to Cart
-                    </button>
+                    <AddToCartButton productId={product.id} />
                   </div>
                 </Card>
               </a>

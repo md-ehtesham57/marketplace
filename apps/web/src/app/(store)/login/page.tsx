@@ -1,15 +1,19 @@
 "use client";
 
+import { Suspense } from "react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@marketplace/ui/button";
 import { Card } from "@marketplace/ui/card";
 import { Input } from "@marketplace/ui/input";
 import { useAuth } from "@/context/auth.context";
 
-export default function LoginPage() {
+function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,7 +28,7 @@ export default function LoginPage() {
     setError("");
     const result = await login(email, password);
     if (result.success) {
-      router.push("/");
+      router.push(redirect);
     } else {
       setError(result.error || "Login failed");
     }
@@ -110,5 +114,13 @@ export default function LoginPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

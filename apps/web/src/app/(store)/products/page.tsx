@@ -1,19 +1,20 @@
+import { AddToCartButton } from "@/components/add-to-cart-button";
 import { Badge } from "@marketplace/ui/badge";
 import { Card } from "@marketplace/ui/card";
 
 const allProducts = [
-  { id: 1,  name: "Wireless Noise Cancelling Headphones", price: 2999,  originalPrice: 4999,  rating: 4.5, reviews: 2341, category: "Electronics", badge: "Best Seller" },
-  { id: 2,  name: "Premium Leather Wallet",               price: 799,   originalPrice: 1299,  rating: 4.3, reviews: 876,  category: "Fashion",     badge: "Sale"        },
-  { id: 3,  name: "Ergonomic Office Chair",               price: 8999,  originalPrice: 12999, rating: 4.7, reviews: 1203, category: "Home",        badge: "Top Rated"   },
-  { id: 4,  name: "Running Shoes Pro",                    price: 3499,  originalPrice: 4999,  rating: 4.4, reviews: 567,  category: "Sports",      badge: "New"         },
-  { id: 5,  name: "Skincare Essentials Kit",              price: 1299,  originalPrice: 1999,  rating: 4.6, reviews: 934,  category: "Beauty",      badge: "Sale"        },
-  { id: 6,  name: "Mechanical Keyboard RGB",              price: 4499,  originalPrice: 5999,  rating: 4.8, reviews: 1876, category: "Electronics", badge: "Top Rated"   },
-  { id: 7,  name: "Yoga Mat Premium",                     price: 999,   originalPrice: 1499,  rating: 4.2, reviews: 432,  category: "Sports",      badge: null          },
-  { id: 8,  name: "Stainless Steel Water Bottle",         price: 599,   originalPrice: 899,   rating: 4.5, reviews: 1120, category: "Home",        badge: "Best Seller" },
-  { id: 9,  name: "Bluetooth Speaker Portable",           price: 1899,  originalPrice: 2999,  rating: 4.3, reviews: 654,  category: "Electronics", badge: "Sale"        },
-  { id: 10, name: "Formal Shirt Slim Fit",                price: 1299,  originalPrice: 1999,  rating: 4.1, reviews: 342,  category: "Fashion",     badge: null          },
-  { id: 11, name: "Ceramic Coffee Mug Set",               price: 699,   originalPrice: 999,   rating: 4.6, reviews: 789,  category: "Home",        badge: "Best Seller" },
-  { id: 12, name: "Protein Shaker Bottle",                price: 449,   originalPrice: 699,   rating: 4.4, reviews: 231,  category: "Sports",      badge: null          },
+  { id: 1, name: "Wireless Noise Cancelling Headphones", price: 2999, originalPrice: 4999, rating: 4.5, reviews: 2341, category: "Electronics", badge: "Best Seller" },
+  { id: 2, name: "Premium Leather Wallet", price: 799, originalPrice: 1299, rating: 4.3, reviews: 876, category: "Fashion", badge: "Sale" },
+  { id: 3, name: "Ergonomic Office Chair", price: 8999, originalPrice: 12999, rating: 4.7, reviews: 1203, category: "Home", badge: "Top Rated" },
+  { id: 4, name: "Running Shoes Pro", price: 3499, originalPrice: 4999, rating: 4.4, reviews: 567, category: "Sports", badge: "New" },
+  { id: 5, name: "Skincare Essentials Kit", price: 1299, originalPrice: 1999, rating: 4.6, reviews: 934, category: "Beauty", badge: "Sale" },
+  { id: 6, name: "Mechanical Keyboard RGB", price: 4499, originalPrice: 5999, rating: 4.8, reviews: 1876, category: "Electronics", badge: "Top Rated" },
+  { id: 7, name: "Yoga Mat Premium", price: 999, originalPrice: 1499, rating: 4.2, reviews: 432, category: "Sports", badge: null },
+  { id: 8, name: "Stainless Steel Water Bottle", price: 599, originalPrice: 899, rating: 4.5, reviews: 1120, category: "Home", badge: "Best Seller" },
+  { id: 9, name: "Bluetooth Speaker Portable", price: 1899, originalPrice: 2999, rating: 4.3, reviews: 654, category: "Electronics", badge: "Sale" },
+  { id: 10, name: "Formal Shirt Slim Fit", price: 1299, originalPrice: 1999, rating: 4.1, reviews: 342, category: "Fashion", badge: null },
+  { id: 11, name: "Ceramic Coffee Mug Set", price: 699, originalPrice: 999, rating: 4.6, reviews: 789, category: "Home", badge: "Best Seller" },
+  { id: 12, name: "Protein Shaker Bottle", price: 449, originalPrice: 699, rating: 4.4, reviews: 231, category: "Sports", badge: null },
 ];
 
 const categories = ["All", "Electronics", "Fashion", "Home", "Sports", "Beauty"];
@@ -28,9 +29,9 @@ const sortOptions = [
 
 const badgeVariant: Record<string, "success" | "warning" | "error" | "info" | "default"> = {
   "Best Seller": "success",
-  "Sale":        "error",
-  "Top Rated":   "info",
-  "New":         "warning",
+  "Sale": "error",
+  "Top Rated": "info",
+  "New": "warning",
 };
 
 function StarRating({ rating }: { rating: number }) {
@@ -208,9 +209,7 @@ export default function ProductsPage() {
                           {Math.round((1 - product.price / product.originalPrice) * 100)}% off
                         </span>
                       </div>
-                      <button className="mt-3 w-full bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium py-2 rounded-lg transition-colors duration-150">
-                        Add to Cart
-                      </button>
+                      <AddToCartButton productId={product.id.toString()} />
                     </div>
                   </Card>
                 </a>
