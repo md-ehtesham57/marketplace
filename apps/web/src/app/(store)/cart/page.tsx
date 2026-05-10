@@ -149,7 +149,12 @@ export default function CartPage() {
                   </p>
                 </div>
                 <div className="mt-6">
-                  <Button variant="primary" size="lg" fullWidth>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    onClick={() => router.push("/checkout")}
+                  >
                     Proceed to Checkout
                   </Button>
                 </div>

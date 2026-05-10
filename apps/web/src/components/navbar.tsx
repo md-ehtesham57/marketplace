@@ -7,10 +7,10 @@ import { useCart } from "@/context/cart.context";
 import { useRouter } from "next/navigation";
 
 const navItems = [
-  { label: "Home",       href: "/"           },
-  { label: "Products",   href: "/products"   },
+  { label: "Home", href: "/" },
+  { label: "Products", href: "/products" },
   { label: "Categories", href: "/categories" },
-  { label: "Deals",      href: "/deals"      },
+  { label: "Deals", href: "/deals" },
 ];
 
 export function AppNavbar() {
@@ -47,6 +47,9 @@ export function AppNavbar() {
 
       {isAuthenticated ? (
         <div className="flex items-center gap-3">
+          <a href="/orders" className="text-sm text-slate-600 hover:text-sky-500 transition-colors hidden md:block">
+            My Orders
+          </a>
           <span className="text-sm text-slate-600 hidden md:block">
             Hi, {user?.firstName}!
           </span>
