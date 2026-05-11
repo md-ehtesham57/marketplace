@@ -11,8 +11,8 @@
     "./navbar": "./src/navbar/index.tsx"
   },
   "devDependencies": {
-    "react": "^18",
-    "@types/react": "^18",
+    "react": "^19",
+    "@types/react": "^19",
     "typescript": "^5"
   }
 }
