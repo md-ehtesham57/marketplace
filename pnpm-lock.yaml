@@ -116,6 +116,9 @@ importers:
         specifier: ^3.22.4
         version: 3.25.76
     devDependencies:
+      '@eslint/js':
+        specifier: ^10.0.1
+        version: 10.0.1(eslint@9.39.4(jiti@2.6.1))
       '@types/bcryptjs':
         specifier: ^3.0.0
         version: 3.0.0
@@ -137,6 +140,18 @@ importers:
       '@types/supertest':
         specifier: ^7.2.0
         version: 7.2.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.59.2
+        version: 8.59.2(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.59.2
+        version: 8.59.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.39.4
+        version: 9.39.4(jiti@2.6.1)
+      globals:
+        specifier: ^17.6.0
+        version: 17.6.0
       supertest:
         specifier: ^7.2.2
         version: 7.2.2
@@ -212,7 +227,7 @@ importers:
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
-        version: 10.0.1
+        version: 10.0.1(eslint@9.39.4(jiti@2.6.1))
       '@tailwindcss/forms':
         specifier: ^0.5.11
         version: 0.5.11(tailwindcss@4.2.4)
@@ -2005,6 +2020,10 @@ packages:
     resolution: {integrity: sha512-ob/2LcVVaVGCYN+r14cnwnoDPUufjiYgSqRhiFD0Q1iI4Odora5RE8Iv1D24hAz5oMophRGkGz+yuvQmmUMnMw==}
     engines: {node: '>=18'}
 
+  globals@17.6.0:
+    resolution: {integrity: sha512-sepffkT8stwnIYbsMBpoCHJuJM5l98FUF2AnE07hfvE0m/qp3R586hw4jF4uadbhvg1ooIdzuu7CsfD2jzCaNA==}
+    engines: {node: '>=18'}
+
   globalthis@1.0.4:
     resolution: {integrity: sha512-DpLKbNU4WylpxJykQujfCcwYWiV/Jhm50Goo0wrVILAv5jOr9d+H+UR3PhSCD2rCCEIg0uc+G+muBTwD54JhDQ==}
     engines: {node: '>= 0.4'}
@@ -3455,7 +3474,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@eslint/js@10.0.1': {}
+  '@eslint/js@10.0.1(eslint@9.39.4(jiti@2.6.1))':
+    optionalDependencies:
+      eslint: 9.39.4(jiti@2.6.1)
 
   '@eslint/js@9.39.4': {}
 
@@ -5144,6 +5165,8 @@ snapshots:
   globals@14.0.0: {}
 
   globals@16.4.0: {}
+
+  globals@17.6.0: {}
 
   globalthis@1.0.4:
     dependencies:
