@@ -6,7 +6,9 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "test": "turbo run test",
+    "test:api": "pnpm --filter api test"
   },
   "devDependencies": {
     "prettier": "^3.0.0",
