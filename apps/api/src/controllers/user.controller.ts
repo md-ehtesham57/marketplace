@@ -66,7 +66,9 @@ export const toggleUserStatus = async (req: AuthRequest, res: Response) => {
       data: { isActive },
     });
 
-    res.json({ message: "User status updated", user: updated });
+    const { password: _, ...safeUser } = updated;
+    res.json({ message: "User status updated", user: safeUser });
+    void _;
   } catch (error) {
     console.error("ToggleUserStatus error:", error);
     res.status(500).json({ error: "Internal server error" });

@@ -26,23 +26,20 @@ export const placeOrder = async (req: AuthRequest, res: Response) => {
             return;
         }
 
-        // Check stock availability
-        for (const item of cart.items) {
-            if (item.product.stock < item.quantity) {
-                res.status(400).json({
-                    error: "Insufficient stock for " + item.product.name,
-                });
-                return;
-            }
-        }
-
         const totalAmount = cart.items.reduce(
             (acc, item) => acc + item.product.price * item.quantity,
             0
         );
 
-        // Create order with items in a transaction
+        // Create order with items in a transaction (stock check inside to prevent TOCTOU)
         const order = await prisma.$transaction(async (tx) => {
+            // Check stock availability inside the transaction
+            for (const item of cart.items) {
+                const fresh = await tx.product.findUnique({ where: { id: item.productId } });
+                if (!fresh || fresh.stock < item.quantity) {
+                    throw new Error("Insufficient stock for " + item.product.name);
+                }
+            }
             const newOrder = await tx.order.create({
                 data: {
                     userId: req.userId as string,
@@ -88,6 +85,11 @@ export const placeOrder = async (req: AuthRequest, res: Response) => {
             order,
         });
     } catch (error) {
+        const message = error instanceof Error ? error.message : "";
+        if (message.startsWith("Insufficient stock for")) {
+            res.status(400).json({ error: message });
+            return;
+        }
         console.error("PlaceOrder error:", error);
         res.status(500).json({ error: "Internal server error" });
     }

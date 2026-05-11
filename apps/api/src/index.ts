@@ -3,6 +3,9 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import http from "http";
+import fs from "fs";
+import path from "path";
 import authRoutes from "./routes/auth.routes";
 import productRoutes from "./routes/product.routes";
 import cartRoutes from "./routes/cart.routes";
@@ -13,8 +16,29 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 4443;
 
-app.use(helmet());
+// Trust proxy — required for rate limiter + secure headers behind reverse proxy
+app.set("trust proxy", 1);
+
+app.use(helmet({
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  },
+}));
+
+// Redirect HTTP → HTTPS in production
+if (process.env.NODE_ENV === "production") {
+  app.use((req, res, next) => {
+    if (!req.secure) {
+      res.redirect(301, `https://${req.hostname}${req.originalUrl}`);
+      return;
+    }
+    next();
+  });
+}
 app.use(cors({
   origin: [
     "http://localhost:3000",
@@ -57,9 +81,23 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 });
 
 if (process.env.NODE_ENV !== "test") {
-  app.listen(PORT, () => {
-    console.log(`API server running at http://localhost:${PORT}`);
+  http.createServer(app).listen(PORT, () => {
+    console.log(`API server (HTTP)  running at http://localhost:${PORT}`);
   });
+
+  // Enable HTTPS when certs exist
+  const certPath = path.join(__dirname, "..", "certs", "cert.pem");
+  const keyPath = path.join(__dirname, "..", "certs", "key.pem");
+  if (process.env.NODE_ENV === "production" || (fs.existsSync(certPath) && fs.existsSync(keyPath))) {
+    const https = require("https") as typeof import("https");
+    const options = {
+      cert: fs.readFileSync(certPath),
+      key: fs.readFileSync(keyPath),
+    };
+    https.createServer(options, app).listen(HTTPS_PORT, () => {
+      console.log(`API server (HTTPS) running at https://localhost:${HTTPS_PORT}`);
+    });
+  }
 }
 
 export default app;

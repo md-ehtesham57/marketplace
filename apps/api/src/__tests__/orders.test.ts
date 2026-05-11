@@ -61,7 +61,10 @@ describe("Order Controller", () => {
       vi.mocked(prisma.$transaction).mockImplementation(async (fn: any) => {
         const tx = {
           order: { create: vi.fn().mockResolvedValue(mockOrder) },
-          product: { update: vi.fn() },
+          product: {
+            findUnique: vi.fn().mockResolvedValue({ stock: 50 }),
+            update: vi.fn(),
+          },
           cartItem: { deleteMany: vi.fn() },
         };
         return fn(tx);
@@ -115,6 +118,15 @@ describe("Order Controller", () => {
           product: { ...mockCart.items[0].product, stock: 1 },
         }],
       } as any);
+
+      vi.mocked(prisma.$transaction).mockImplementation(async (fn: any) => {
+        const tx = {
+          product: {
+            findUnique: vi.fn().mockResolvedValue({ stock: 1 }),
+          },
+        };
+        return fn(tx);
+      });
 
       const res = await request(app)
         .post("/api/orders")

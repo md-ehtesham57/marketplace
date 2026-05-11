@@ -44,8 +44,10 @@ export const getProducts = async (req: Request, res: Response) => {
       ];
     }
 
-    const orderBy: any = {};
-    orderBy[sort as string] = order;
+    const allowedSortFields = ["createdAt", "price", "rating", "name", "totalReviews"];
+    const sortField = allowedSortFields.includes(sort as string) ? sort : "createdAt";
+    const sortOrder = order === "asc" ? "asc" : "desc";
+    const orderBy = { [sortField as string]: sortOrder };
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
@@ -200,9 +202,24 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
       return;
     }
 
+    const allowedFields = [
+      "name", "description", "price", "originalPrice",
+      "stock", "images", "categoryId", "isFeatured",
+    ];
+    const data: Record<string, unknown> = {};
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        data[field] = field === "price" || field === "originalPrice"
+          ? parseFloat(req.body[field])
+          : field === "stock"
+            ? parseInt(req.body[field]) || 0
+            : req.body[field];
+      }
+    }
+
     const updated = await prisma.product.update({
       where: { id },
-      data: { ...req.body },
+      data,
     });
 
     res.json({ message: "Product updated successfully", product: updated });
