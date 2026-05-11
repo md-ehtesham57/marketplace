@@ -15,7 +15,10 @@ const PORT = process.env.PORT || 4000;
 
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+  ],
   credentials: true,
 }));
 app.use(morgan("dev"));
@@ -26,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
-app.use("/api/order", orderRoutes);
+app.use("/api/orders", orderRoutes);
 
 // Health Check
 app.get("/health", (_req, res) => {
