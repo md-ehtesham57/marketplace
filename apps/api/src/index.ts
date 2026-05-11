@@ -8,7 +8,7 @@ import productRoutes from "./routes/product.routes";
 import cartRoutes from "./routes/cart.routes";
 import orderRoutes from "./routes/order.routes";
 import userRoutes from "./routes/user.routes";
-
+import { apiLimiter } from "./middleware/rateLimiter";
 dotenv.config();
 
 const app = express();
@@ -25,6 +25,9 @@ app.use(cors({
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Global rate limiter
+app.use("/api", apiLimiter);
 
 // Routes
 app.use("/api/auth", authRoutes);

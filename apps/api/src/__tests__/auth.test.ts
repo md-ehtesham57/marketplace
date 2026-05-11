@@ -31,7 +31,7 @@ const mockCreatedUser = {
 
 describe("Auth Controller", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("POST /api/auth/register", () => {
@@ -165,6 +165,24 @@ describe("Auth Controller", () => {
 
       expect(res.status).toBe(403);
       expect(res.body.error).toBe("Account is deactivated");
+    });
+  });
+
+  describe("Rate Limiting", () => {
+    it("blocks auth requests after 10 attempts", async () => {
+      vi.mocked(prisma.user.findUnique).mockReset();
+
+      const attempt = () =>
+        request(app)
+          .post("/api/auth/login")
+          .send({ email: "ratelimit@test.com", password: "password123" });
+
+      const lastAllowed = await attempt();
+      expect([401, 403]).toContain(lastAllowed.status);
+
+      const blocked = await attempt();
+      expect(blocked.status).toBe(429);
+      expect(blocked.body.error).toBe("Too many attempts. Try again later.");
     });
   });
 

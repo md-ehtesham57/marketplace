@@ -222,6 +222,22 @@ describe("Order Controller", () => {
     });
   });
 
+  describe("Rate Limiting", () => {
+    it("blocks order placement after 5 attempts", async () => {
+      const attempt = () =>
+        request(app)
+          .post("/api/orders")
+          .send({ deliveryAddress: "Rate limit test address" });
+
+      const lastAllowed = await attempt();
+      expect([400, 401]).toContain(lastAllowed.status);
+
+      const blocked = await attempt();
+      expect(blocked.status).toBe(429);
+      expect(blocked.body.error).toBe("Too many orders placed. Slow down.");
+    });
+  });
+
   describe("PUT /api/orders/:id/status", () => {
     it("allows admin to update order status", async () => {
       vi.mocked(prisma.order.findUnique).mockResolvedValue(mockOrder as any);
