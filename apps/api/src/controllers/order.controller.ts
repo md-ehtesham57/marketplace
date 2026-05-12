@@ -180,7 +180,7 @@ export const getOrder = async (req: AuthRequest, res: Response) => {
     }
 };
 
-// ── Get All Orders (Admin) ───────────────────────────────────
+// Get All Orders (Admin)
 export const getAllOrders = async (req: AuthRequest, res: Response) => {
     try {
         const { page = "1", limit = "10", status } = req.query;
