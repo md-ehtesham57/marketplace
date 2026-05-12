@@ -56,7 +56,7 @@ export default function ProductsPage() {
   return (
     <div className="bg-slate-50 min-h-screen">
 
-      {/* ── Page Header ───────────────────────────────────────────── */}
+      {/* Page Header */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <h1 className="text-2xl font-bold text-slate-800">All Products</h1>
@@ -69,7 +69,7 @@ export default function ProductsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
 
-          {/* ── Sidebar Filters ───────────────────────────────────── */}
+          {/* Sidebar Filters */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
 
             {/* Search */}
@@ -151,7 +151,7 @@ export default function ProductsPage() {
 
           </aside>
 
-          {/* ── Product Grid ──────────────────────────────────────── */}
+          {/* Product Grid */}
           <div className="flex-1">
 
             {/* Toolbar */}
