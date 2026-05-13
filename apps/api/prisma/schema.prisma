@@ -19,11 +19,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  seller    Seller?
-  orders    Order[]
-  reviews   Review[]
-  cart      Cart?
-  addresses Address[]
+  seller              Seller?
+  orders              Order[]
+  reviews             Review[]
+  cart                Cart?
+  addresses           Address[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -194,4 +195,16 @@ model Address {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("addresses")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
 }
