@@ -9,6 +9,7 @@ import cartRoutes from "./routes/cart.routes";
 import orderRoutes from "./routes/order.routes";
 import userRoutes from "./routes/user.routes";
 import reviewRoutes from "./routes/review.routes";
+import wishlistRoutes from "./routes/wishlist.routes";
 import { apiLimiter } from "./middleware/rateLimiter";
 dotenv.config();
 
@@ -57,6 +58,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/products", reviewRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 // Health Check
 app.get("/health", (_req, res) => {

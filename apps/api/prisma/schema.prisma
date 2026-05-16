@@ -24,6 +24,7 @@ model User {
   reviews             Review[]
   reviewLikes         ReviewLike[]
   reviewReplies       ReviewReply[]
+  wishlist            Wishlist[]
   cart                Cart?
   addresses           Address[]
   passwordResetTokens PasswordResetToken[]
@@ -92,6 +93,7 @@ model Product {
   seller     Seller      @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   category   Category    @relation(fields: [categoryId], references: [id])
   reviews    Review[]
+  wishlist   Wishlist[]
   orderItems OrderItem[]
   cartItems  CartItem[]
 
@@ -145,6 +147,19 @@ model ReviewReply {
   review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 
   @@map("review_replies")
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("wishlist")
 }
 
 model Cart {
