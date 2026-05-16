@@ -89,7 +89,7 @@ export function ReviewForm({ productId, onReviewSubmitted, existingReview }: Rev
               onClick={() => setRating(star)}
               onMouseEnter={() => setHovered(star)}
               onMouseLeave={() => setHovered(0)}
-              className="focus:outline-none transition-transform hover:scale-110"
+              className="focus:outline-none transition-transform hover:scale-110 cursor-pointer"
             >
               <svg
                 className={"w-8 h-8 transition-colors " + (star <= (hovered || rating) ? "text-amber-400" : "text-slate-200")}
@@ -123,7 +123,7 @@ export function ReviewForm({ productId, onReviewSubmitted, existingReview }: Rev
       <button
         onClick={handleSubmit}
         disabled={loading || rating === 0}
-        className="w-full bg-sky-500 hover:bg-sky-600 disabled:opacity-60 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors"
+        className="w-full bg-sky-500 hover:bg-sky-600 disabled:opacity-60 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors cursor-pointer"
       >
         {loading ? "Submitting..." : existingReview ? "Update Review" : "Submit Review"}
       </button>

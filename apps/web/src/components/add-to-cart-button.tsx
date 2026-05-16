@@ -40,7 +40,7 @@ export function AddToCartButton({ productId, className }: AddToCartButtonProps) 
     <button
       onClick={handleClick}
       disabled={loading}
-      className={className || "mt-3 w-full bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium py-2 rounded-lg transition-colors duration-150 disabled:opacity-60"}
+      className={className || "mt-3 w-full bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium py-2 rounded-lg transition-colors duration-150 cursor-pointer disabled:opacity-60"}
     >
       {loading ? "Adding..." : added ? "✓ Added!" : "Add to Cart"}
     </button>

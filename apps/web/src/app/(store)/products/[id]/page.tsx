@@ -74,13 +74,13 @@ function StarRating({ rating, size = "md" }: { rating: number; size?: "sm" | "md
     </div>
   );
 }
-
 export default async function ProductDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const product = await getProduct(params.id);
+  const { id } = await params;
+  const product = await getProduct(id);
 
   if (!product) notFound();
 
@@ -152,7 +152,7 @@ export default async function ProductDetailPage({
                   <Badge variant="warning">Only {product.stock} left</Badge>
                 )}
               </div>
-              <button className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center hover:border-red-300 hover:text-red-500 transition-colors">
+              <button className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center hover:border-red-300 hover:text-red-500 transition-colors cursor-pointer">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
@@ -278,31 +278,13 @@ export default async function ProductDetailPage({
                 </div>
               </div>
 
-              {/* Recent Reviews */}
-              {product.reviews.length > 0 ? (
-                <div className="space-y-3 border-t border-slate-100 pt-4">
-                  {product.reviews.slice(0, 3).map((review) => (
-                    <div key={review.id} className="border-b border-slate-100 pb-3 last:border-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-semibold text-slate-700">
-                          {review.user.firstName} {review.user.lastName}
-                        </span>
-                        <StarRating rating={review.rating} size="sm" />
-                      </div>
-                      {review.comment && (
-                        <p className="text-xs text-slate-500 leading-relaxed">{review.comment}</p>
-                      )}
-                      <p className="text-xs text-slate-400 mt-1">
-                        {new Date(review.createdAt).toLocaleDateString("en-IN")}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-slate-400 text-center py-4">No reviews yet</p>
-              )}
             </Card>
           </div>
+        </div>
+
+        {/* Reviews List */}
+        <div className="mb-12">
+          <ReviewsList productId={product.id} initialReviews={product.reviews} />
         </div>
 
         {/* Related Products */}

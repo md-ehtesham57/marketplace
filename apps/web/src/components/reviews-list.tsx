@@ -119,7 +119,7 @@ export function ReviewsList({ productId, initialReviews = [] }: ReviewsListProps
           <button
             onClick={handleDeleteReview}
             disabled={deleting}
-            className="text-xs text-red-500 hover:text-red-600 font-medium disabled:opacity-60 transition-colors"
+            className="text-xs text-red-500 hover:text-red-600 font-medium disabled:opacity-60 transition-colors cursor-pointer"
           >
             {deleting ? "Deleting..." : "Delete Review"}
           </button>
@@ -177,7 +177,7 @@ export function ReviewsList({ productId, initialReviews = [] }: ReviewsListProps
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg text-slate-500 hover:border-sky-400 hover:text-sky-500 disabled:opacity-40 transition-colors"
+              className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg text-slate-500 hover:border-sky-400 hover:text-sky-500 disabled:opacity-40 transition-colors cursor-pointer"
             >
               Prev
             </button>
@@ -185,7 +185,7 @@ export function ReviewsList({ productId, initialReviews = [] }: ReviewsListProps
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg text-slate-500 hover:border-sky-400 hover:text-sky-500 disabled:opacity-40 transition-colors"
+              className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg text-slate-500 hover:border-sky-400 hover:text-sky-500 disabled:opacity-40 transition-colors cursor-pointer"
             >
               Next
             </button>
