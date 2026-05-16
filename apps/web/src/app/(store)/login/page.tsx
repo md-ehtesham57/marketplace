@@ -29,7 +29,12 @@ function LoginForm() {
     setError("");
     const result = await login(email, password);
     if (result.success) {
-      router.push(redirect);
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      if (storedUser.role === "SELLER" && (!redirect || redirect === "/")) {
+        router.push("/seller");
+      } else {
+        router.push(redirect);
+      }
     } else {
       setError(result.error || "Login failed");
     }

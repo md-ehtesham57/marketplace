@@ -114,20 +114,24 @@ export const getProduct = async (req: Request, res: Response) => {
       return;
     }
 
-    const reviewIds = product.reviews.map((r) => r.id);
-    const allLikes = await prisma.reviewLike.findMany({
-      where: { reviewId: { in: reviewIds } },
-      select: { reviewId: true, type: true },
-    });
+    const reviews = product.reviews || [];
+    const reviewIds = reviews.map((r) => r.id);
+    let likeCounts: Record<string, number> = {};
+    let dislikeCounts: Record<string, number> = {};
 
-    const likeCounts: Record<string, number> = {};
-    const dislikeCounts: Record<string, number> = {};
-    for (const l of allLikes) {
-      if (l.type === "LIKE") likeCounts[l.reviewId] = (likeCounts[l.reviewId] || 0) + 1;
-      else dislikeCounts[l.reviewId] = (dislikeCounts[l.reviewId] || 0) + 1;
+    if (reviewIds.length > 0) {
+      const allLikes = await prisma.reviewLike.findMany({
+        where: { reviewId: { in: reviewIds } },
+        select: { reviewId: true, type: true },
+      });
+
+      for (const l of allLikes) {
+        if (l.type === "LIKE") likeCounts[l.reviewId] = (likeCounts[l.reviewId] || 0) + 1;
+        else dislikeCounts[l.reviewId] = (dislikeCounts[l.reviewId] || 0) + 1;
+      }
     }
 
-    const enrichedReviews = product.reviews.map((r: any) => ({
+    const enrichedReviews = reviews.map((r: any) => ({
       ...r,
       likeCount: likeCounts[r.id] || 0,
       dislikeCount: dislikeCounts[r.id] || 0,
@@ -281,6 +285,48 @@ export const deleteProduct = async (req: AuthRequest, res: Response) => {
     res.json({ message: "Product deleted successfully" });
   } catch (error) {
     console.error("DeleteProduct error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Get Seller's Own Products
+export const getMyProducts = async (req: AuthRequest, res: Response) => {
+  try {
+    const seller = await prisma.seller.findUnique({
+      where: { userId: req.userId },
+    });
+
+    if (!seller) {
+      res.status(403).json({ error: "Only sellers can view their products" });
+      return;
+    }
+
+    const products = await prisma.product.findMany({
+      where: { sellerId: seller.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        category: { select: { name: true, slug: true } },
+      },
+    });
+
+    res.json({ products });
+  } catch (error) {
+    console.error("GetMyProducts error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Get All Categories
+export const getCategories = async (_req: Request, res: Response) => {
+  try {
+    const categories = await prisma.category.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+    });
+
+    res.json({ categories });
+  } catch (error) {
+    console.error("GetCategories error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

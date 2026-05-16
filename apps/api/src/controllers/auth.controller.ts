@@ -35,6 +35,7 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
+    const userRole = role === "SELLER" ? "SELLER" : "BUYER";
 
     const user = await prisma.user.create({
       data: {
@@ -42,7 +43,7 @@ export const register = async (req: Request, res: Response) => {
         password: hashedPassword,
         firstName,
         lastName,
-        role: role === "SELLER" ? "SELLER" : "BUYER",
+        role: userRole,
       },
       select: {
         id: true,
@@ -53,6 +54,15 @@ export const register = async (req: Request, res: Response) => {
         createdAt: true,
       },
     });
+
+    if (userRole === "SELLER") {
+      await prisma.seller.create({
+        data: {
+          userId: user.id,
+          storeName: firstName + "'s Store",
+        },
+      });
+    }
 
     const token = generateToken(user.id, user.role);
 

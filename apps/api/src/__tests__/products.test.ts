@@ -28,6 +28,7 @@ const mockProduct = {
   updatedAt: new Date("2025-01-01"),
   category: { name: "Electronics", slug: "electronics" },
   seller: { storeName: "Test Store", rating: 4.8 },
+  reviews: [],
 };
 
 const mockSellerProfile = {
