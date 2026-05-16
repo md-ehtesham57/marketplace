@@ -1,8 +1,10 @@
+import { ReviewsList } from "@/components/reviews-list";
 import { Badge } from "@marketplace/ui/badge";
 import { Button } from "@marketplace/ui/button";
 import { Card } from "@marketplace/ui/card";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { notFound } from "next/navigation";
+
 
 interface Review {
   id: string;
@@ -228,9 +230,9 @@ export default async function ProductDetailPage({
             {/* Delivery Badges */}
             <div className="grid grid-cols-3 gap-3">
               {[
-                { icon: "🚚", label: "Free Delivery",  sub: "On orders above RS 500" },
-                { icon: "↩️", label: "7 Day Returns",  sub: "Easy return policy"     },
-                { icon: "🔒", label: "Secure Payment", sub: "100% safe checkout"     },
+                { icon: "🚚", label: "Free Delivery", sub: "On orders above RS 500" },
+                { icon: "↩️", label: "7 Day Returns", sub: "Easy return policy" },
+                { icon: "🔒", label: "Secure Payment", sub: "100% safe checkout" },
               ].map((item) => (
                 <div key={item.label} className="flex flex-col items-center text-center p-3 bg-white rounded-xl border border-slate-200">
                   <span className="text-xl mb-1">{item.icon}</span>
