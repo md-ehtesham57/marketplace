@@ -2,6 +2,45 @@ import { Response } from "express";
 import { prisma } from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth";
 
+const reviewInclude = {
+  user: { select: { firstName: true, lastName: true, avatar: true } },
+  _count: { select: { replies: true } },
+};
+
+async function enrichReviews(reviews: any[], userId?: string) {
+  if (reviews.length === 0) return reviews;
+
+  const reviewIds = reviews.map((r: any) => r.id);
+
+  const allLikes = await prisma.reviewLike.findMany({
+    where: { reviewId: { in: reviewIds } },
+    select: { reviewId: true, type: true, userId: true },
+  });
+
+  const userLikeMap: Record<string, string | null> = {};
+  if (userId) {
+    for (const l of allLikes) {
+      if (l.userId === userId) {
+        userLikeMap[l.reviewId] = l.type;
+      }
+    }
+  }
+
+  const likeCounts: Record<string, number> = {};
+  const dislikeCounts: Record<string, number> = {};
+  for (const l of allLikes) {
+    if (l.type === "LIKE") likeCounts[l.reviewId] = (likeCounts[l.reviewId] || 0) + 1;
+    else dislikeCounts[l.reviewId] = (dislikeCounts[l.reviewId] || 0) + 1;
+  }
+
+  return reviews.map((r: any) => ({
+    ...r,
+    likeCount: likeCounts[r.id] || 0,
+    dislikeCount: dislikeCounts[r.id] || 0,
+    userLike: userLikeMap[r.id] || null,
+  }));
+}
+
 // ── Create Review ────────────────────────────────────────────
 export const createReview = async (req: AuthRequest, res: Response) => {
   try {
@@ -44,14 +83,9 @@ export const createReview = async (req: AuthRequest, res: Response) => {
           rating: parseInt(rating),
           comment: comment || null,
         },
-        include: {
-          user: {
-            select: { firstName: true, lastName: true, avatar: true },
-          },
-        },
+        include: reviewInclude,
       });
 
-      // Recalculate product rating
       const allReviews = await tx.review.findMany({
         where: { productId },
         select: { rating: true },
@@ -94,17 +128,15 @@ export const getProductReviews = async (req: AuthRequest, res: Response) => {
         skip,
         take: limitNum,
         orderBy: { createdAt: "desc" },
-        include: {
-          user: {
-            select: { firstName: true, lastName: true, avatar: true },
-          },
-        },
+        include: reviewInclude,
       }),
       prisma.review.count({ where: { productId } }),
     ]);
 
+    const enriched = await enrichReviews(reviews, req.userId);
+
     res.json({
-      reviews,
+      reviews: enriched,
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -140,9 +172,7 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
           rating: rating ? parseInt(rating) : review.rating,
           comment: comment !== undefined ? comment : review.comment,
         },
-        include: {
-          user: { select: { firstName: true, lastName: true, avatar: true } },
-        },
+        include: reviewInclude,
       });
 
       const allReviews = await tx.review.findMany({
@@ -223,11 +253,186 @@ export const getUserReview = async (req: AuthRequest, res: Response) => {
           productId,
         },
       },
+      include: reviewInclude,
     });
 
-    res.json({ review });
+    const enriched = review ? (await enrichReviews([review], req.userId))[0] : null;
+
+    res.json({ review: enriched });
   } catch (error) {
     console.error("GetUserReview error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// ── Toggle Review Like / Dislike ─────────────────────────────
+export const toggleReviewLike = async (req: AuthRequest, res: Response) => {
+  try {
+    const { reviewId } = req.params;
+    const { type } = req.body;
+
+    if (!type || !["LIKE", "DISLIKE"].includes(type)) {
+      res.status(400).json({ error: "Type must be LIKE or DISLIKE" });
+      return;
+    }
+
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+    });
+
+    if (!review) {
+      res.status(404).json({ error: "Review not found" });
+      return;
+    }
+
+    const existing = await prisma.reviewLike.findUnique({
+      where: {
+        userId_reviewId: {
+          userId: req.userId as string,
+          reviewId,
+        },
+      },
+    });
+
+    if (existing) {
+      if (existing.type === type) {
+        await prisma.reviewLike.delete({ where: { id: existing.id } });
+        res.json({ action: "removed", type: null });
+      } else {
+        await prisma.reviewLike.update({
+          where: { id: existing.id },
+          data: { type },
+        });
+        res.json({ action: "switched", type });
+      }
+    } else {
+      await prisma.reviewLike.create({
+        data: {
+          userId: req.userId as string,
+          reviewId,
+          type,
+        },
+      });
+      res.json({ action: "added", type });
+    }
+  } catch (error) {
+    console.error("ToggleReviewLike error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// ── Get Review Replies ───────────────────────────────────────
+export const getReviewReplies = async (req: AuthRequest, res: Response) => {
+  try {
+    const { reviewId } = req.params;
+
+    const replies = await prisma.reviewReply.findMany({
+      where: { reviewId },
+      orderBy: { createdAt: "asc" },
+      include: {
+        user: { select: { firstName: true, lastName: true, avatar: true } },
+      },
+    });
+
+    res.json({ replies });
+  } catch (error) {
+    console.error("GetReviewReplies error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// ── Create Review Reply ──────────────────────────────────────
+export const createReviewReply = async (req: AuthRequest, res: Response) => {
+  try {
+    const { reviewId } = req.params;
+    const { content } = req.body;
+
+    if (!content || !content.trim()) {
+      res.status(400).json({ error: "Content is required" });
+      return;
+    }
+
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+    });
+
+    if (!review) {
+      res.status(404).json({ error: "Review not found" });
+      return;
+    }
+
+    const reply = await prisma.reviewReply.create({
+      data: {
+        userId: req.userId as string,
+        reviewId,
+        content: content.trim(),
+      },
+      include: {
+        user: { select: { firstName: true, lastName: true, avatar: true } },
+      },
+    });
+
+    res.status(201).json({ message: "Reply posted successfully", reply });
+  } catch (error) {
+    console.error("CreateReviewReply error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// ── Update Review Reply ──────────────────────────────────────
+export const updateReviewReply = async (req: AuthRequest, res: Response) => {
+  try {
+    const { replyId } = req.params;
+    const { content } = req.body;
+
+    if (!content || !content.trim()) {
+      res.status(400).json({ error: "Content is required" });
+      return;
+    }
+
+    const reply = await prisma.reviewReply.findFirst({
+      where: { id: replyId, userId: req.userId },
+    });
+
+    if (!reply) {
+      res.status(404).json({ error: "Reply not found or unauthorized" });
+      return;
+    }
+
+    const updated = await prisma.reviewReply.update({
+      where: { id: replyId },
+      data: { content: content.trim() },
+      include: {
+        user: { select: { firstName: true, lastName: true, avatar: true } },
+      },
+    });
+
+    res.json({ message: "Reply updated successfully", reply: updated });
+  } catch (error) {
+    console.error("UpdateReviewReply error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// ── Delete Review Reply ──────────────────────────────────────
+export const deleteReviewReply = async (req: AuthRequest, res: Response) => {
+  try {
+    const { replyId } = req.params;
+
+    const reply = await prisma.reviewReply.findFirst({
+      where: { id: replyId, userId: req.userId },
+    });
+
+    if (!reply) {
+      res.status(404).json({ error: "Reply not found or unauthorized" });
+      return;
+    }
+
+    await prisma.reviewReply.delete({ where: { id: replyId } });
+
+    res.json({ message: "Reply deleted successfully" });
+  } catch (error) {
+    console.error("DeleteReviewReply error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

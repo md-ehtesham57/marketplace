@@ -103,6 +103,7 @@ export const getProduct = async (req: Request, res: Response) => {
           orderBy: { createdAt: "desc" },
           include: {
             user: { select: { firstName: true, lastName: true, avatar: true } },
+            _count: { select: { replies: true } },
           },
         },
       },
@@ -113,7 +114,27 @@ export const getProduct = async (req: Request, res: Response) => {
       return;
     }
 
-    res.json({ product });
+    const reviewIds = product.reviews.map((r) => r.id);
+    const allLikes = await prisma.reviewLike.findMany({
+      where: { reviewId: { in: reviewIds } },
+      select: { reviewId: true, type: true },
+    });
+
+    const likeCounts: Record<string, number> = {};
+    const dislikeCounts: Record<string, number> = {};
+    for (const l of allLikes) {
+      if (l.type === "LIKE") likeCounts[l.reviewId] = (likeCounts[l.reviewId] || 0) + 1;
+      else dislikeCounts[l.reviewId] = (dislikeCounts[l.reviewId] || 0) + 1;
+    }
+
+    const enrichedReviews = product.reviews.map((r: any) => ({
+      ...r,
+      likeCount: likeCounts[r.id] || 0,
+      dislikeCount: dislikeCounts[r.id] || 0,
+      userLike: null,
+    }));
+
+    res.json({ product: { ...product, reviews: enrichedReviews } });
   } catch (error) {
     console.error("GetProduct error:", error);
     res.status(500).json({ error: "Internal server error" });

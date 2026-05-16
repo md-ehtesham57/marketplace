@@ -22,6 +22,8 @@ model User {
   seller              Seller?
   orders              Order[]
   reviews             Review[]
+  reviewLikes         ReviewLike[]
+  reviewReplies       ReviewReply[]
   cart                Cart?
   addresses           Address[]
   passwordResetTokens PasswordResetToken[]
@@ -108,9 +110,41 @@ model Review {
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  likes   ReviewLike[]
+  replies ReviewReply[]
 
   @@unique([userId, productId])
   @@map("reviews")
+}
+
+model ReviewLike {
+  id        String   @id @default(cuid())
+  type      String
+  createdAt DateTime @default(now())
+
+  userId   String
+  reviewId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, reviewId])
+  @@map("review_likes")
+}
+
+model ReviewReply {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId   String
+  reviewId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@map("review_replies")
 }
 
 model Cart {

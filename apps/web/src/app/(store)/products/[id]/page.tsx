@@ -11,7 +11,12 @@ interface Review {
   rating: number;
   comment: string;
   createdAt: string;
+  updatedAt: string;
   user: { firstName: string; lastName: string; avatar?: string };
+  likeCount: number;
+  dislikeCount: number;
+  _count: { replies: number };
+  userLike: string | null;
 }
 
 interface Product {
