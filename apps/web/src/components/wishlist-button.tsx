@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
@@ -24,7 +25,7 @@ export function WishlistButton({ productId, className = "", size = "sm" }: Wishl
 
   const checkStatus = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/wishlist/check", {
+      const res = await fetch(apiUrl("/api/wishlist/check"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,13 +52,13 @@ export function WishlistButton({ productId, className = "", size = "sm" }: Wishl
     setLoading(true);
     try {
       if (wishlisted) {
-        await fetch("http://localhost:4000/api/wishlist/" + productId, {
+        await fetch(apiUrl("/api/wishlist/") + productId, {
           method: "DELETE",
           headers: { Authorization: "Bearer " + token },
         });
         setWishlisted(false);
       } else {
-        await fetch("http://localhost:4000/api/wishlist/" + productId, {
+        await fetch(apiUrl("/api/wishlist/") + productId, {
           method: "POST",
           headers: { Authorization: "Bearer " + token },
         });

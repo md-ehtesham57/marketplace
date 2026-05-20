@@ -44,6 +44,11 @@ const mockSellerProfile = {
 describe("Product Controller", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(prisma.user.findUnique).mockImplementation(async ({ where }: any) => ({
+      id: where.id,
+      role: where.id === "seller-1" ? "SELLER" : "BUYER",
+      isActive: true,
+    }) as any);
   });
 
   describe("GET /api/products", () => {

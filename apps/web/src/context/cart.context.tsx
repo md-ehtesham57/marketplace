@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useAuth } from "./auth.context";
 
@@ -54,7 +55,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         try {
             setIsLoading(true);
-            const res = await fetch("http://localhost:4000/api/cart", {
+            const res = await fetch(apiUrl("/api/cart"), {
                 headers: { Authorization: "Bearer " + token },
             });
             const data = await res.json();
@@ -83,7 +84,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
 
         try {
-            const res = await fetch("http://localhost:4000/api/cart", {
+            const res = await fetch(apiUrl("/api/cart"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -109,7 +110,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (!token) return;
 
         try {
-            await fetch("http://localhost:4000/api/cart/" + itemId, {
+            await fetch(apiUrl("/api/cart/") + itemId, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -127,7 +128,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (!token) return;
 
         try {
-            await fetch("http://localhost:4000/api/cart/" + itemId, {
+            await fetch(apiUrl("/api/cart/") + itemId, {
                 method: "DELETE",
                 headers: { Authorization: "Bearer " + token },
             });
@@ -141,7 +142,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (!token) return;
 
         try {
-            await fetch("http://localhost:4000/api/cart/clear", {
+            await fetch(apiUrl("/api/cart/clear"), {
                 method: "DELETE",
                 headers: { Authorization: "Bearer " + token },
             });

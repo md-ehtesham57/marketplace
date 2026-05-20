@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth.context";
 
@@ -25,10 +26,10 @@ export default function AdminAnalyticsPage() {
   const fetchAnalytics = async () => {
     try {
       const [ordersRes, productsRes] = await Promise.all([
-        fetch("http://localhost:4000/api/orders/admin/all?limit=100", {
+        fetch(apiUrl("/api/orders/admin/all?limit=100"), {
           headers: { Authorization: "Bearer " + token },
         }),
-        fetch("http://localhost:4000/api/products?limit=100", {
+        fetch(apiUrl("/api/products?limit=100"), {
           headers: { Authorization: "Bearer " + token },
         }),
       ]);

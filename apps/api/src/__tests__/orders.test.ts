@@ -52,6 +52,11 @@ const mockOrder = {
 describe("Order Controller", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(prisma.user.findUnique).mockImplementation(async ({ where }: any) => ({
+      id: where.id,
+      role: where.id === "admin-1" ? "ADMIN" : "BUYER",
+      isActive: true,
+    }) as any);
   });
 
   describe("POST /api/orders", () => {
@@ -62,8 +67,7 @@ describe("Order Controller", () => {
         const tx = {
           order: { create: vi.fn().mockResolvedValue(mockOrder) },
           product: {
-            findUnique: vi.fn().mockResolvedValue({ stock: 50 }),
-            update: vi.fn(),
+            updateMany: vi.fn().mockResolvedValue({ count: 1 }),
           },
           cartItem: { deleteMany: vi.fn() },
         };
@@ -122,7 +126,7 @@ describe("Order Controller", () => {
       vi.mocked(prisma.$transaction).mockImplementation(async (fn: any) => {
         const tx = {
           product: {
-            findUnique: vi.fn().mockResolvedValue({ stock: 1 }),
+            updateMany: vi.fn().mockResolvedValue({ count: 0 }),
           },
         };
         return fn(tx);

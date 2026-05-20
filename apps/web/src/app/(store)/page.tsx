@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { WishlistButton } from "@/components/wishlist-button";
 import { Badge } from "@marketplace/ui/badge";
@@ -42,7 +43,7 @@ function StarRating({ rating }: { rating: number }) {
 
 async function getFeaturedProducts() {
   try {
-    const res = await fetch("http://localhost:4000/api/products/featured", {
+    const res = await fetch(apiUrl("/api/products/featured"), {
       cache: "no-store",
     });
     const data = await res.json();

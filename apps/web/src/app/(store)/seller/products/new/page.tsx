@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
@@ -40,7 +41,7 @@ export default function AddProductPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/products/categories");
+      const res = await fetch(apiUrl("/api/products/categories"));
       const data = await res.json();
       setCategories(data.categories || []);
       if (data.categories?.length > 0) {
@@ -78,7 +79,7 @@ export default function AddProductPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/api/products", {
+      const res = await fetch(apiUrl("/api/products"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

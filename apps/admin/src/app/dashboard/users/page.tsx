@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth.context";
 
@@ -37,7 +38,7 @@ export default function AdminUsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/users/admin/all", {
+      const res = await fetch(apiUrl("/api/users/admin/all"), {
         headers: { Authorization: "Bearer " + token },
       });
       const data = await res.json();
@@ -52,7 +53,7 @@ export default function AdminUsersPage() {
 
   const toggleUserStatus = async (userId: string, isActive: boolean) => {
     try {
-      await fetch("http://localhost:4000/api/users/admin/" + userId + "/status", {
+      await fetch(apiUrl("/api/users/admin/") + userId + "/status", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

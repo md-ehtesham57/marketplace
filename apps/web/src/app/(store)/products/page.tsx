@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import { Badge } from "@marketplace/ui/badge";
 import { Card } from "@marketplace/ui/card";
 import { AddToCartButton } from "@/components/add-to-cart-button";
@@ -29,7 +30,7 @@ async function getProducts(searchParams: Record<string, string>) {
     if (searchParams.page)     params.set("page",     searchParams.page);
     params.set("limit", "12");
 
-    const res = await fetch("http://localhost:4000/api/products?" + params.toString(), {
+    const res = await fetch(apiUrl("/api/products?") + params.toString(), {
       cache: "no-store",
     });
     const data = await res.json();
@@ -41,7 +42,7 @@ async function getProducts(searchParams: Record<string, string>) {
 
 async function getCategories() {
   try {
-    const res = await fetch("http://localhost:4000/api/products?limit=100", {
+    const res = await fetch(apiUrl("/api/products?limit=100"), {
       cache: "no-store",
     });
     const data = await res.json();

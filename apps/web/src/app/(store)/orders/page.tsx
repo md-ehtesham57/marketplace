@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
@@ -59,7 +60,7 @@ export default function OrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/orders", {
+      const res = await fetch(apiUrl("/api/orders"), {
         headers: { Authorization: "Bearer " + token },
       });
       const data = await res.json();
@@ -73,7 +74,7 @@ export default function OrdersPage() {
 
   const cancelOrder = async (orderId: string) => {
     try {
-      const res = await fetch("http://localhost:4000/api/orders/" + orderId + "/cancel", {
+      const res = await fetch(apiUrl("/api/orders/") + orderId + "/cancel", {
         method: "PUT",
         headers: { Authorization: "Bearer " + token },
       });

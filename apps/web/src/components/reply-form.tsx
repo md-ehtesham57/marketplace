@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useState } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
@@ -34,8 +35,8 @@ export function ReplyForm({ reviewId, onReplyPosted, existingReply, onCancel }: 
 
     try {
       const url = existingReply
-        ? "http://localhost:4000/api/products/replies/" + existingReply.id
-        : "http://localhost:4000/api/products/reviews/" + reviewId + "/replies";
+        ? apiUrl("/api/products/replies/") + existingReply.id
+        : apiUrl("/api/products/reviews/") + reviewId + "/replies";
 
       const res = await fetch(url, {
         method: existingReply ? "PUT" : "POST",

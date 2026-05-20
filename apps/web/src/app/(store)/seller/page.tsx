@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
@@ -41,7 +42,7 @@ export default function SellerDashboard() {
   const fetchProducts = useCallback(async () => {
     setFetching(true);
     try {
-      const res = await fetch("http://localhost:4000/api/products/my", {
+      const res = await fetch(apiUrl("/api/products/my"), {
         headers: { Authorization: "Bearer " + token },
       });
       const data = await res.json();
@@ -55,7 +56,7 @@ export default function SellerDashboard() {
 
   const handleToggleActive = async (productId: string, current: boolean) => {
     try {
-      await fetch("http://localhost:4000/api/products/" + productId, {
+      await fetch(apiUrl("/api/products/") + productId, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +73,7 @@ export default function SellerDashboard() {
   const handleDelete = async (productId: string) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
     try {
-      await fetch("http://localhost:4000/api/products/" + productId, {
+      await fetch(apiUrl("/api/products/") + productId, {
         method: "DELETE",
         headers: { Authorization: "Bearer " + token },
       });

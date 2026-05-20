@@ -31,6 +31,11 @@ const mockProduct = {
 describe("Cart Controller", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: "user-1",
+      role: "BUYER",
+      isActive: true,
+    } as any);
   });
 
   describe("GET /api/cart", () => {
@@ -87,6 +92,26 @@ describe("Cart Controller", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.message).toBe("Product added to cart");
+    });
+
+    it("rejects when accumulated cart quantity exceeds stock", async () => {
+      vi.mocked(prisma.product.findUnique).mockResolvedValue({
+        ...mockProduct,
+        stock: 2,
+      } as any);
+      vi.mocked(prisma.cart.findUnique).mockResolvedValue(mockCart as any);
+      vi.mocked(prisma.cartItem.findUnique).mockResolvedValue({
+        id: "item-1",
+        quantity: 2,
+      } as any);
+
+      const res = await request(app)
+        .post("/api/cart")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ productId: "prod-1", quantity: 1 });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("Insufficient stock");
     });
 
     it("rejects adding out-of-stock product", async () => {

@@ -31,15 +31,22 @@ export const placeOrder = async (req: AuthRequest, res: Response) => {
             0
         );
 
-        // Create order with items in a transaction (stock check inside to prevent TOCTOU)
         const order = await prisma.$transaction(async (tx) => {
-            // Check stock availability inside the transaction
             for (const item of cart.items) {
-                const fresh = await tx.product.findUnique({ where: { id: item.productId } });
-                if (!fresh || fresh.stock < item.quantity) {
+                const updated = await tx.product.updateMany({
+                    where: {
+                        id: item.productId,
+                        isActive: true,
+                        stock: { gte: item.quantity },
+                    },
+                    data: { stock: { decrement: item.quantity } },
+                });
+
+                if (updated.count !== 1) {
                     throw new Error("Insufficient stock for " + item.product.name);
                 }
             }
+
             const newOrder = await tx.order.create({
                 data: {
                     userId: req.userId as string,
@@ -66,15 +73,6 @@ export const placeOrder = async (req: AuthRequest, res: Response) => {
                 },
             });
 
-            // Decrease stock for each product
-            for (const item of cart.items) {
-                await tx.product.update({
-                    where: { id: item.productId },
-                    data: { stock: { decrement: item.quantity } },
-                });
-            }
-
-            // Clear cart after order
             await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
 
             return newOrder;

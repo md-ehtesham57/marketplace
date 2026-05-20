@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useState } from "react";
 import { Button } from "@marketplace/ui/button";
 import { Card } from "@marketplace/ui/card";
@@ -21,7 +22,7 @@ export default function ForgotPasswordPage() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:4000/api/auth/forgot-password", {
+      const res = await fetch(apiUrl("/api/auth/forgot-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

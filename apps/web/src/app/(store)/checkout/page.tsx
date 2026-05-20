@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth.context";
@@ -45,7 +46,7 @@ export default function CheckoutPage() {
     const deliveryAddress = address + ", " + city + ", " + state + " - " + pincode;
 
     try {
-      const res = await fetch("http://localhost:4000/api/orders", {
+      const res = await fetch(apiUrl("/api/orders"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

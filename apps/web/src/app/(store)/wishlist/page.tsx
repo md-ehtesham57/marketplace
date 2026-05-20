@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
@@ -43,7 +44,7 @@ export default function WishlistPage() {
   const fetchWishlist = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/api/wishlist", {
+      const res = await fetch(apiUrl("/api/wishlist"), {
         headers: { Authorization: "Bearer " + token },
       });
       const data = await res.json();

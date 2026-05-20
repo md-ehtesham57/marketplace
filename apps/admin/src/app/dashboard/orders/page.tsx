@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth.context";
 
@@ -36,7 +37,7 @@ export default function AdminOrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/orders/admin/all?limit=20", {
+      const res = await fetch(apiUrl("/api/orders/admin/all?limit=20"), {
         headers: { Authorization: "Bearer " + token },
       });
       const data = await res.json();
@@ -52,7 +53,7 @@ export default function AdminOrdersPage() {
   const updateStatus = async (orderId: string, status: string) => {
     setUpdatingId(orderId);
     try {
-      await fetch("http://localhost:4000/api/orders/" + orderId + "/status", {
+      await fetch(apiUrl("/api/orders/") + orderId + "/status", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

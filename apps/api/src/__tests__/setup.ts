@@ -20,6 +20,7 @@ vi.mock("../lib/prisma", () => {
       findMany: mockFn(),
       create: mockFn(),
       update: mockFn(),
+      updateMany: mockFn(),
       count: mockFn(),
     },
     category: {

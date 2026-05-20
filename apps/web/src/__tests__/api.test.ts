@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { api } from "@/lib/api";
 
@@ -18,7 +19,7 @@ describe("api utility", () => {
       await api.get("/api/products");
 
       expect(mockFetch).toHaveBeenCalledWith(
-        "http://localhost:4000/api/products",
+        apiUrl("/api/products"),
         expect.objectContaining({
           headers: { "Content-Type": "application/json" },
         })
@@ -70,7 +71,7 @@ describe("api utility", () => {
       await api.post("/api/auth/login", body);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        "http://localhost:4000/api/auth/login",
+        apiUrl("/api/auth/login"),
         expect.objectContaining({
           method: "POST",
           headers: { "Content-Type": "application/json" },

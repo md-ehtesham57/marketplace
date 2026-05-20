@@ -15,6 +15,14 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const allowedOrigins = (
+  process.env.CORS_ORIGINS ||
+  process.env.CLIENT_URL ||
+  "http://localhost:3000,http://localhost:3001"
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 // Trust proxy — required when behind a reverse proxy (nginx, Caddy, etc.)
 app.set("trust proxy", 1);
@@ -38,10 +46,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:3001",
-  ],
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(morgan("dev"));

@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import { ReviewsList } from "@/components/reviews-list";
 import { WishlistButton } from "@/components/wishlist-button";
 import { Badge } from "@marketplace/ui/badge";
@@ -39,7 +40,7 @@ interface Product {
 
 async function getProduct(id: string): Promise<Product | null> {
   try {
-    const res = await fetch("http://localhost:4000/api/products/" + id, {
+    const res = await fetch(apiUrl("/api/products/") + id, {
       cache: "no-store",
     });
     if (!res.ok) return null;
@@ -53,7 +54,7 @@ async function getProduct(id: string): Promise<Product | null> {
 async function getRelatedProducts(categorySlug: string, currentId: string) {
   try {
     const res = await fetch(
-      "http://localhost:4000/api/products?category=" + categorySlug + "&limit=4",
+      apiUrl("/api/products?category=") + categorySlug + "&limit=4",
       { cache: "no-store" }
     );
     const data = await res.json();

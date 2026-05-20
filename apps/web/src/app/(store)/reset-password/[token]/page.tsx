@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@marketplace/ui/button";
@@ -37,7 +38,7 @@ export default function ResetPasswordPage() {
     setMessage("");
 
     try {
-      const res = await fetch(`http://localhost:4000/api/auth/reset-password/${token}`, {
+      const res = await fetch(apiUrl(`/api/auth/reset-password/${token}`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),

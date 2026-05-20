@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth.context";
 import { ReviewForm } from "./review-form";
@@ -84,7 +85,7 @@ export function ReviewsList({ productId, initialReviews = [] }: ReviewsListProps
       if (token) headers["Authorization"] = "Bearer " + token;
 
       const res = await fetch(
-        "http://localhost:4000/api/products/" + productId + "/reviews?page=" + page + "&limit=5",
+        apiUrl("/api/products/") + productId + "/reviews?page=" + page + "&limit=5",
         { headers }
       );
       const data = await res.json();
@@ -100,7 +101,7 @@ export function ReviewsList({ productId, initialReviews = [] }: ReviewsListProps
   const fetchUserReview = async () => {
     try {
       const res = await fetch(
-        "http://localhost:4000/api/products/" + productId + "/reviews/me",
+        apiUrl("/api/products/") + productId + "/reviews/me",
         { headers: { Authorization: "Bearer " + token } }
       );
       const data = await res.json();
@@ -114,7 +115,7 @@ export function ReviewsList({ productId, initialReviews = [] }: ReviewsListProps
     if (!userReview) return;
     setDeleting(true);
     try {
-      await fetch("http://localhost:4000/api/products/reviews/" + userReview.id, {
+      await fetch(apiUrl("/api/products/reviews/") + userReview.id, {
         method: "DELETE",
         headers: { Authorization: "Bearer " + token },
       });
@@ -130,7 +131,7 @@ export function ReviewsList({ productId, initialReviews = [] }: ReviewsListProps
   const handleToggleLike = async (reviewId: string, type: string) => {
     if (!isAuthenticated) return;
     try {
-      const res = await fetch("http://localhost:4000/api/products/reviews/" + reviewId + "/like", {
+      const res = await fetch(apiUrl("/api/products/reviews/") + reviewId + "/like", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -177,7 +178,7 @@ export function ReviewsList({ productId, initialReviews = [] }: ReviewsListProps
 
   const handleDeleteReply = async (replyId: string, reviewId: string) => {
     try {
-      await fetch("http://localhost:4000/api/products/replies/" + replyId, {
+      await fetch(apiUrl("/api/products/replies/") + replyId, {
         method: "DELETE",
         headers: { Authorization: "Bearer " + token },
       });
@@ -189,7 +190,7 @@ export function ReviewsList({ productId, initialReviews = [] }: ReviewsListProps
 
   const fetchReplies = async (reviewId: string) => {
     try {
-      const res = await fetch("http://localhost:4000/api/products/reviews/" + reviewId + "/replies");
+      const res = await fetch(apiUrl("/api/products/reviews/") + reviewId + "/replies");
       const data = await res.json();
       setReplies((prev) => ({ ...prev, [reviewId]: data.replies || [] }));
     } catch (error) {

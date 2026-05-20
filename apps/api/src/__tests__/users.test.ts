@@ -35,6 +35,11 @@ const mockUsers = [
 describe("User Controller (Admin)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(prisma.user.findUnique).mockImplementation(async ({ where }: any) => ({
+      id: where.id,
+      role: where.id === "admin-1" ? "ADMIN" : "BUYER",
+      isActive: true,
+    }) as any);
   });
 
   describe("GET /api/users/admin/all", () => {
@@ -69,7 +74,9 @@ describe("User Controller (Admin)", () => {
 
   describe("PUT /api/users/admin/:id/status", () => {
     it("toggles user status", async () => {
-      vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUsers[0] as any);
+      vi.mocked(prisma.user.findUnique)
+        .mockResolvedValueOnce({ id: "admin-1", role: "ADMIN", isActive: true } as any)
+        .mockResolvedValueOnce(mockUsers[0] as any);
       vi.mocked(prisma.user.update).mockResolvedValue({
         ...mockUsers[0],
         isActive: false,
@@ -85,7 +92,9 @@ describe("User Controller (Admin)", () => {
     });
 
     it("returns 404 for non-existent user", async () => {
-      vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+      vi.mocked(prisma.user.findUnique)
+        .mockResolvedValueOnce({ id: "admin-1", role: "ADMIN", isActive: true } as any)
+        .mockResolvedValueOnce(null);
 
       const res = await request(app)
         .put("/api/users/admin/nonexistent/status")

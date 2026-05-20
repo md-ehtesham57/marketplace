@@ -70,9 +70,15 @@ export const getCart = async (req: AuthRequest, res: Response) => {
 export const addToCart = async (req: AuthRequest, res: Response) => {
   try {
     const { productId, quantity = 1 } = req.body;
+    const quantityNum = Number(quantity);
 
     if (!productId) {
       res.status(400).json({ error: "Product ID is required" });
+      return;
+    }
+
+    if (!Number.isInteger(quantityNum) || quantityNum < 1) {
+      res.status(400).json({ error: "Quantity must be at least 1" });
       return;
     }
 
@@ -82,11 +88,6 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
 
     if (!product || !product.isActive) {
       res.status(404).json({ error: "Product not found" });
-      return;
-    }
-
-    if (product.stock < quantity) {
-      res.status(400).json({ error: "Insufficient stock" });
       return;
     }
 
@@ -104,14 +105,21 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
       where: { cartId_productId: { cartId: cart.id, productId } },
     });
 
+    const nextQuantity = (existingItem?.quantity ?? 0) + quantityNum;
+
+    if (product.stock < nextQuantity) {
+      res.status(400).json({ error: "Insufficient stock" });
+      return;
+    }
+
     if (existingItem) {
       await prisma.cartItem.update({
         where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + quantity },
+        data: { quantity: nextQuantity },
       });
     } else {
       await prisma.cartItem.create({
-        data: { cartId: cart.id, productId, quantity },
+        data: { cartId: cart.id, productId, quantity: quantityNum },
       });
     }
 
@@ -127,8 +135,9 @@ export const updateCartItem = async (req: AuthRequest, res: Response) => {
   try {
     const { itemId } = req.params;
     const { quantity } = req.body;
+    const quantityNum = Number(quantity);
 
-    if (!quantity || quantity < 1) {
+    if (!Number.isInteger(quantityNum) || quantityNum < 1) {
       res.status(400).json({ error: "Quantity must be at least 1" });
       return;
     }
@@ -152,14 +161,14 @@ export const updateCartItem = async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    if (item.product.stock < quantity) {
+    if (item.product.stock < quantityNum) {
       res.status(400).json({ error: "Insufficient stock" });
       return;
     }
 
     await prisma.cartItem.update({
       where: { id: itemId },
-      data: { quantity },
+      data: { quantity: quantityNum },
     });
 
     res.json({ message: "Cart item updated" });
