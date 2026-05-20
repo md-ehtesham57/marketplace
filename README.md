@@ -35,7 +35,7 @@ A full-stack marketplace monorepo built with:
 ### Prerequisites
 
 - Node.js 20+
-- `pnpm`
+- `pnpm` 10.x
 - PostgreSQL database
 
 ### Install dependencies
@@ -46,12 +46,18 @@ pnpm install
 
 ### Backend environment
 
-Create an `.env` file in `apps/api` or at the workspace root with at least the following values:
+Create `apps/api/.env`. You can start from `apps/api/.env.example`.
 
 ```env
+PORT=4000
+NODE_ENV=development
 DATABASE_URL="postgresql://user:pass@localhost:5432/marketplace"
 JWT_SECRET="your-jwt-secret"
+CLIENT_URL="http://localhost:3000"
+CORS_ORIGINS="http://localhost:3000,http://localhost:3001"
 ```
+
+`JWT_SECRET` should be a strong random value, for example from `openssl rand -hex 64`.
 
 Optional mail settings for password reset emails:
 
@@ -63,11 +69,42 @@ SMTP_PASS=
 FROM_EMAIL=noreply@marketplace.local
 ```
 
+### Frontend environment
+
+The web and admin apps default to `http://localhost:4000`, but deployments should set the API URL explicitly.
+
+Create `apps/web/.env.local` and `apps/admin/.env.local` as needed:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
+
+### Database setup
+
+Apply the Prisma migration and generate the Prisma client:
+
+```bash
+pnpm --filter api exec prisma migrate dev
+pnpm --filter api exec prisma generate
+```
+
+For production or CI deployments, use:
+
+```bash
+pnpm --filter api exec prisma migrate deploy
+pnpm --filter api exec prisma generate
+```
+
 ### Seed the database
 
 ```bash
 pnpm --filter api seed
 ```
+
+Seeded accounts:
+
+- Admin: `admin@marketplace.com` / `admin123`
+- Seller: `seller@marketplace.com` / `password123`
 
 ## Run commands
 
@@ -92,6 +129,15 @@ pnpm --filter admin dev
 - Backend API: `http://localhost:4000`
 - Web storefront: `http://localhost:3000`
 - Admin dashboard: `http://localhost:3001`
+
+## Verification
+
+```bash
+pnpm test
+pnpm build
+```
+
+The Next.js build uses `next/font` for Geist fonts, so first-time builds may need network access to fetch Google Fonts.
 
 ## Backend overview
 
@@ -128,10 +174,13 @@ pnpm --filter admin dev
 - `turbo.json` defines build and test orchestration
 - `pnpm-workspace.yaml` includes `apps/*` and `packages/*`
 
-## Notes
+## Configuration notes
 
 - The root workspace uses `@prisma/client` and `prisma` as top-level dependencies.
 - `apps/api` currently expects a PostgreSQL connection and a JWT secret for auth.
+- `CLIENT_URL` is used when generating password reset links.
+- `CORS_ORIGINS` is a comma-separated allowlist for browser clients.
+- `NEXT_PUBLIC_API_URL` is used by both Next.js apps to call the API.
 - `apps/web` and `apps/admin` are Next.js apps bootstrapped from `create-next-app`.
 
 ## App docs
