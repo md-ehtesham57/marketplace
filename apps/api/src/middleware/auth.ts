@@ -62,3 +62,15 @@ export const authorizeAdmin = (
   }
   next();
 };
+
+export const authorizeSeller = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  if (req.userRole !== "SELLER" && req.userRole !== "ADMIN") {
+    res.status(403).json({ error: "Forbidden — seller access required" });
+    return;
+  }
+  next();
+};

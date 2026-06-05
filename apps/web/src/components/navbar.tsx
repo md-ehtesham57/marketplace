@@ -53,14 +53,14 @@ export function AppNavbar() {
 
       {isAuthenticated ? (
         <div className="flex items-center gap-3">
+          {(user?.role === "SELLER" || user?.role === "ADMIN") && (
+            <a href="/seller" className="text-sm text-slate-600 hover:text-sky-500 transition-colors hidden md:block">
+              Seller Panel
+            </a>
+          )}
           <a href="/orders" className="text-sm text-slate-600 hover:text-sky-500 transition-colors hidden md:block">
             My Orders
           </a>
-          {user?.role === "SELLER" && (
-            <a href="/seller" className="text-sm text-sky-500 hover:text-sky-600 font-medium transition-colors hidden md:block">
-              My Products
-            </a>
-          )}
           <span className="text-sm text-slate-600 hidden md:block">
             Hi, {user?.firstName}!
           </span>

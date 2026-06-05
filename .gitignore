@@ -88,3 +88,8 @@ test-results/
 tmp/
 temp/
 certs/
+
+# ===========================
+# Project Documentation
+# ===========================
+ARCHITECTURE.md
