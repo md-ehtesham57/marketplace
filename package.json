@@ -11,6 +11,9 @@
     "test:api": "pnpm --filter api test"
   },
   "devDependencies": {
+    "eslint-import-resolver-typescript": "3.10.1",
+    "eslint-module-utils": "2.12.1",
+    "eslint-plugin-import": "2.32.0",
     "prettier": "^3.0.0",
     "turbo": "latest"
   },
