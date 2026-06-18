@@ -10,8 +10,8 @@ import { authenticate } from "../middleware/auth";
 const router = Router();
 
 router.get("/", authenticate, getWishlist);
+router.post("/check", authenticate, checkWishlist);
 router.post("/:productId", authenticate, addToWishlist);
 router.delete("/:productId", authenticate, removeFromWishlist);
-router.post("/check", authenticate, checkWishlist);
 
 export default router;

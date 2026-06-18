@@ -38,8 +38,10 @@ export default function WishlistPage() {
       router.push("/login?redirect=/wishlist");
       return;
     }
+   if (token) {
     fetchWishlist();
-  }, [isAuthenticated, isLoading]);
+  }
+  }, [isAuthenticated, isLoading, token]);
 
   const fetchWishlist = async () => {
     setLoading(true);

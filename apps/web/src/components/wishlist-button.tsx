@@ -1,7 +1,7 @@
 "use client";
 
 import { apiUrl } from "@/lib/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
 
@@ -9,34 +9,63 @@ interface WishlistButtonProps {
   productId: string;
   className?: string;
   size?: "sm" | "md";
+  initialWishlisted?: boolean; // 🚀 Optimization: Allows skipping fetch if parent knows status
 }
 
-export function WishlistButton({ productId, className = "", size = "sm" }: WishlistButtonProps) {
+export function WishlistButton({ 
+  productId, 
+  className = "", 
+  size = "sm", 
+  initialWishlisted 
+}: WishlistButtonProps) {
   const { isAuthenticated, token } = useAuth();
   const router = useRouter();
-  const [wishlisted, setWishlisted] = useState(false);
+  const [wishlisted, setWishlisted] = useState(initialWishlisted || false);
   const [loading, setLoading] = useState(false);
 
+  // Sync state if the parent prop changes dynamically
   useEffect(() => {
-    if (isAuthenticated && token) {
-      checkStatus();
+    if (initialWishlisted !== undefined) {
+      setWishlisted(initialWishlisted);
     }
-  }, [isAuthenticated, token, productId]);
+  }, [initialWishlisted]);
 
-  const checkStatus = async () => {
+  useEffect(() => {
+    // 🚀 Optimization: Skip the network call if the parent page already provided the state
+    if (initialWishlisted !== undefined) return;
+
+    const isTokenReady = token && typeof token === "string" && token.trim() !== "" && token !== "undefined";
+    
+    // 🚀 Bug Fix: AbortController prevents race conditions from out-of-order responses
+    const controller = new AbortController();
+
+    if (isAuthenticated && isTokenReady) {
+      checkStatus(controller.signal);
+    } else if (!isAuthenticated || !token) {
+      setWishlisted(false);
+    }
+
+    return () => controller.abort(); // Cancel pending fetch if component unmounts/re-renders
+  }, [isAuthenticated, token, productId, initialWishlisted]);
+
+  const checkStatus = async (signal: AbortSignal) => {
     try {
       const res = await fetch(apiUrl("/api/wishlist/check"), {
         method: "POST",
+        signal, // Attach the abort signal
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token,
         },
         body: JSON.stringify({ productIds: [productId] }),
       });
+      if (!res.ok) return;
       const data = await res.json();
       setWishlisted(data.wishlisted?.[productId] || false);
-    } catch {
-      // silently fail
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error("Check status error:", err);
+      }
     }
   };
 
@@ -45,27 +74,33 @@ export function WishlistButton({ productId, className = "", size = "sm" }: Wishl
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      router.push("/login?redirect=" + window.location.pathname);
+      // Safe fallback in case window is undefined during SSR
+      const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+      router.push("/login?redirect=" + currentPath);
       return;
     }
 
+    if (loading) return; // Prevent double clicks while submitting
+
+    // 🚀 UX Improvement: Optimistic Update (Toggle UI instantly)
+    const previousState = wishlisted;
+    setWishlisted(!previousState);
     setLoading(true);
+
     try {
-      if (wishlisted) {
-        await fetch(apiUrl("/api/wishlist/") + productId, {
-          method: "DELETE",
-          headers: { Authorization: "Bearer " + token },
-        });
-        setWishlisted(false);
-      } else {
-        await fetch(apiUrl("/api/wishlist/") + productId, {
-          method: "POST",
-          headers: { Authorization: "Bearer " + token },
-        });
-        setWishlisted(true);
+      const url = apiUrl("/api/wishlist/") + productId;
+      const response = await fetch(url, {
+        method: previousState ? "DELETE" : "POST",
+        headers: { Authorization: "Bearer " + token },
+      });
+
+      if (!response.ok) {
+        throw new Error("Server rejected request");
       }
-    } catch {
-      // silently fail
+    } catch (error) {
+      console.error("Wishlist mutation failed:", error);
+      // 🚀 UX Improvement: Rollback UI to original state if API fails
+      setWishlisted(previousState); 
     } finally {
       setLoading(false);
     }
@@ -78,11 +113,11 @@ export function WishlistButton({ productId, className = "", size = "sm" }: Wishl
     <button
       onClick={handleClick}
       disabled={loading}
-      className={sizeClasses + " rounded-full border flex items-center justify-center transition-all cursor-pointer " +
-        (wishlisted
+      className={`${sizeClasses} rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+        wishlisted
           ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
-          : "bg-white border-slate-200 text-slate-400 hover:border-red-300 hover:text-red-500") +
-        " " + className}
+          : "bg-white border-slate-200 text-slate-400 hover:border-red-300 hover:text-red-500"
+      } ${className}`}
       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
     >
       <svg

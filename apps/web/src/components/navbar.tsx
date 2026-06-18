@@ -4,6 +4,7 @@ import { Navbar } from "@marketplace/ui/navbar";
 import { Button } from "@marketplace/ui/button";
 import { useAuth } from "@/context/auth.context";
 import { useCart } from "@/context/cart.context";
+import { useWishlist } from "@/context/wishlist.context"; // 🚀 Import the wishlist hook
 import { useRouter } from "next/navigation";
 
 const navItems = [
@@ -16,6 +17,7 @@ const navItems = [
 export function AppNavbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const { items } = useCart();
+  const { wishlistCount } = useWishlist(); // 🚀 Consume global wishlist count state
   const router = useRouter();
 
   const handleLogout = () => {
@@ -36,19 +38,28 @@ export function AppNavbar() {
 
   const actions = (
     <div className="flex items-center gap-3">
-      <a href="/wishlist" className="text-slate-600 hover:text-red-500 transition-colors" aria-label="Wishlist">
+      {/* 🚀 Wishlist Link with Dynamic Badge Indicator */}
+      <a href="/wishlist" className="relative text-slate-600 hover:text-sky-500 transition-colors" aria-label="Wishlist">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
+        {wishlistCount > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 bg-sky-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center animate-in fade-in scale-in duration-150">
+            {wishlistCount}
+          </span>
+        )}
       </a>
 
+      {/* Cart Link */}
       <a href="/cart" className="relative text-slate-600 hover:text-sky-500 transition-colors" aria-label="Cart">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
         </svg>
-        <span className="absolute -top-1.5 -right-1.5 bg-sky-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
-          {items.length}
-        </span>
+        {items.length > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 bg-sky-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+            {items.length}
+          </span>
+        )}
       </a>
 
       {isAuthenticated ? (
