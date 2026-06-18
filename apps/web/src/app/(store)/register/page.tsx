@@ -12,13 +12,13 @@ export default function RegisterPage() {
   const router = useRouter();
   const [role, setRole] = useState("BUYER");
   const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName]   = useState("");
-  const [email, setEmail]         = useState("");
-  const [password, setPassword]   = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [confirm, setConfirm]     = useState("");
+  const [confirm, setConfirm] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
-  const [error, setError]         = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async () => {
@@ -41,9 +41,13 @@ export default function RegisterPage() {
     const result = await register({ email, password, firstName, lastName, role });
 
     if (result.success) {
-      router.push("/");
+      if (role === "SELLER") {
+        router.push("/seller");
+      } else {
+        router.push("/");
+      }
     } else {
-      setError(result.error || "Registration failed");
+      setError(result.error || "Registration failed. Please try again.");
     }
     setIsLoading(false);
   };
@@ -90,9 +94,9 @@ export default function RegisterPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <Input id="firstname" label="First Name" type="text" placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} fullWidth />
-              <Input id="lastname"  label="Last Name"  type="text" placeholder="Doe"  value={lastName}  onChange={(e) => setLastName(e.target.value)}  fullWidth />
+              <Input id="lastname" label="Last Name" type="text" placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} fullWidth />
             </div>
-            <Input id="email"    label="Email Address" type="email"    placeholder="you@example.com"   value={email}    onChange={(e) => setEmail(e.target.value)}    fullWidth />
+            <Input id="email" label="Email Address" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} fullWidth />
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
               <div style={{ position: "relative" }}>
@@ -169,7 +173,10 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-slate-500 mt-6">
           Already have an account?{" "}
-          <a href="/login" className="text-sky-500 hover:text-sky-600 font-medium transition-colors">
+          <a
+            href={role === "SELLER" ? "/login?redirect=/seller" : "/login"}
+            className="text-sky-500 hover:text-sky-600 font-medium transition-colors"
+          >
             Sign in
           </a>
         </p>

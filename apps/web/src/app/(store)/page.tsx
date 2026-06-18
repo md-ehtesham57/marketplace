@@ -1,6 +1,7 @@
 import { apiUrl } from "@/lib/api";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { WishlistButton } from "@/components/wishlist-button";
+import { HeroActions } from "@/components/hero-actions";
 import { Badge } from "@marketplace/ui/badge";
 import { Button } from "@marketplace/ui/button";
 import { Card } from "@marketplace/ui/card";
@@ -73,10 +74,7 @@ export default async function HomePage() {
             <p className="text-slate-300 text-lg mb-8 leading-relaxed">
               Shop from thousands of verified sellers. Quality products, great prices, fast delivery.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Button variant="primary" size="lg">Shop Now</Button>
-              <Button variant="outline" size="lg">Become a Seller</Button>
-            </div>
+            <HeroActions />
             <div className="mt-12 flex items-center gap-8">
               {[
                 { label: "Products", value: "50K+" },
