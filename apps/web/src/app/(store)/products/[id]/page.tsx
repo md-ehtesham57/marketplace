@@ -109,7 +109,7 @@ export default async function ProductDetailPage({
             <span>›</span>
             <a href="/products" className="hover:text-sky-500 transition-colors">Products</a>
             <span>›</span>
-            <a href={"/categories/" + product.category.slug} className="hover:text-sky-500 transition-colors">
+            <a href={"/products?category=" + product.category.slug} className="hover:text-sky-500 transition-colors">
               {product.category.name}
             </a>
             <span>›</span>

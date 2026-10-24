@@ -7,14 +7,17 @@ import { Button } from "@marketplace/ui/button";
 import { Card } from "@marketplace/ui/card";
 
 const categories = [
-  { name: "Electronics", icon: "📱", count: 1240 },
-  { name: "Fashion", icon: "👗", count: 980 },
-  { name: "Home & Living", icon: "🛋️", count: 754 },
-  { name: "Sports", icon: "⚽", count: 632 },
-  { name: "Books", icon: "📚", count: 421 },
-  { name: "Beauty", icon: "💄", count: 389 },
-  { name: "Toys", icon: "🧸", count: 310 },
-  { name: "Automotive", icon: "🚗", count: 275 },
+  { name: "Electronics", slug: "electronics", icon: "📱", count: 1240 },
+  { name: "Fashion", slug: "fashion", icon: "👗", count: 980 },
+  { name: "Home & Living", slug: "home-living", icon: "🛋️", count: 754 },
+  { name: "Sports", slug: "sports", icon: "⚽", count: 632 },
+  { name: "Books", slug: "books", icon: "📚", count: 421 },
+  { name: "Beauty", slug: "beauty", icon: "💄", count: 389 },
+  { name: "Clothes", slug: "clothes", icon: "", count: 356 },
+  { name: "Shoes", slug: "shoes", icon: "", count: 294 },
+  { name: "Perfume", slug: "perfume", icon: "", count: 187 },
+  { name: "Toys", slug: "toys", icon: "🧸", count: 310 },
+  { name: "Automotive", slug: "automotive", icon: "🚗", count: 275 },
 ];
 
 const badgeVariant: Record<string, "success" | "warning" | "error" | "info" | "default"> = {
@@ -98,16 +101,16 @@ export default async function HomePage() {
             <h2 className="text-2xl font-bold text-slate-800">Shop by Category</h2>
             <p className="text-slate-500 text-sm mt-1">Find exactly what you are looking for</p>
           </div>
-          <a href="/categories" className="text-sm font-medium text-sky-500 hover:text-sky-600 transition-colors">View all →</a>
+          <a href="/products" className="text-sm font-medium text-sky-500 hover:text-sky-600 transition-colors">View all →</a>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
           {categories.map((cat) => (
             <a
               key={cat.name}
-              href={"/categories/" + cat.name.toLowerCase().replace(" & ", "-")}
+              href={"/products?category=" + cat.slug}
               className="group flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-slate-200 hover:border-sky-300 hover:shadow-md transition-all duration-200"
             >
-              <span className="text-3xl group-hover:scale-110 transition-transform duration-200">{cat.icon}</span>
+              <span className="text-3xl group-hover:scale-110 transition-transform duration-200">{cat.icon || cat.name.charAt(0)}</span>
               <span className="text-xs font-semibold text-slate-700 text-center">{cat.name}</span>
               <span className="text-xs text-slate-400">{cat.count.toLocaleString()}</span>
             </a>

@@ -20,7 +20,7 @@ export function Navbar({ logo, navItems, actions }: NavbarProps) {
           {navItems && navItems.length > 0 && (
             <nav className="hidden md:flex items-center gap-8">
               {navItems.map((item) => (
-                <a key={item.href} href={item.href} className="text-sm font-medium text-slate-600 hover:text-sky-500 transition-colors duration-150">
+                <a key={item.label} href={item.href} className="text-sm font-medium text-slate-600 hover:text-sky-500 transition-colors duration-150">
                   {item.label}
                 </a>
               ))}
